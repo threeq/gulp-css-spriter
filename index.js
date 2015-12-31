@@ -59,7 +59,10 @@ var spriter = function(options) {
 		'spritesmithOptions': {},
 		// Used to format output CSS
 		// You should be using a separate beautifier plugin
-		'outputIndent': '\t'
+		'outputIndent': '\t',
+        //
+        //
+        styleHandle:null
 	};
 
 	var settings = extend({}, defaults, options);
@@ -222,7 +225,17 @@ var spriter = function(options) {
 								var transformedChunk = chunk.clone();
 
 								try {
-									transformedChunk = transformFileWithSpriteSheetData(transformedChunk, result.coordinates, settings.pathToSpriteSheetFromCSS, settings.includeMode, settings.silent, settings.outputIndent);
+
+                                    transformedChunk = transformFileWithSpriteSheetData(
+                                        transformedChunk,
+                                        result.coordinates,
+                                        settings.pathToSpriteSheetFromCSS,
+                                        settings.includeMode, settings.silent, settings.outputIndent,
+                                        function (imagePath, coords) {
+                                            if(settings.styleHandle) {
+                                                return settings.styleHandle(imagePath, coords, result.properties)
+                                            }
+                                        });
 								}
 								catch(err) {
 									err.message = 'Something went wrong when transforming chunks: ' + err.message;
@@ -245,13 +258,13 @@ var spriter = function(options) {
 							});
 
 
-						}).catch(function(err) {
+						}, function() {
 							settings.spriteSheetBuildCallback(err, null);
 							reject(err);
 						});
 
 
-						spriteSheetSavedPromise.then(function() {
+						spriteSheetSavedPromise.finally(function() {
 
 							// Call a callback from the settings the user can hook onto
 							if(settings.spriteSheetBuildCallback) {
