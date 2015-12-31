@@ -60,8 +60,10 @@ var spriter = function(options) {
 		// Used to format output CSS
 		// You should be using a separate beautifier plugin
 		'outputIndent': '\t',
-        //
-        //
+        // 用户自定义样式操作
+        // function (imagePath, coords, properties) {
+        //      // return css style object. eg: { 'background-size': "30px 30px" }
+        // }
         styleHandle:null
 	};
 
